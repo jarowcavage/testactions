@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Pull Docker Image
         run: docker pull python:bookworm@sha256:ec171bc30122c014f83f7756fe21c4ab26d33e7c4610a63a18da2728f9ed33f8
+      - name: Tag Docker Image
         run: docker tag python:bookworm@sha256:ec171bc30122c014f83f7756fe21c4ab26d33e7c4610a63a18da2728f9ed33f8 bookworm
       - name: Run Orca Container Image Scan
         uses: orcasecurity/shiftleft-container-image-action@v1.0.6

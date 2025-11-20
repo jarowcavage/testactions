@@ -19,12 +19,13 @@ jobs:
       # Checkout your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout Repository
         uses: actions/checkout@v4
-
+      - name: Pull Docker Image
+        run: docker pull python:bookworm@sha256:ec171bc30122c014f83f7756fe21c4ab26d33e7c4610a63a18da2728f9ed33f8
       - name: Run Orca Container Image Scan
         uses: orcasecurity/shiftleft-container-image-action@v1.0.6
         with:
           api_token: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
           project_key: ${{ env.PROJECT_KEY }}
-          image: python:bookworm@sha256:ec171bc30122c014f83f7756fe21c4ab26d33e7c4610a63a18da2728f9ed33f8
+          image: python:bookworm
           output:
             "results/"

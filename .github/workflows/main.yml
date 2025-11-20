@@ -31,3 +31,9 @@ jobs:
           image: bookworm
           output:
             "results/"
+      - name: Upload Orca Scan Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: orca-scan-results
+          path: results/
+

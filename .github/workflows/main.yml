@@ -29,3 +29,5 @@ jobs:
           image: python:bookworm
           output:
             "results/"
+            "results/image"
+            "results/image.json"

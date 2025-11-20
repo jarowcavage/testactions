@@ -24,7 +24,7 @@ jobs:
         with:
           api_token: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
           project_key: ${{ env.PROJECT_KEY }}
-          image: python:bookworm
+          image: python:bookworm@sha256:ec171bc30122c014f83f7756fe21c4ab26d33e7c4610a63a18da2728f9ed33f8
           output:
             "results/"
       - name: Show Orca Scan Results in Logs

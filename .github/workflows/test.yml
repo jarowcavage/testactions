@@ -1,5 +1,4 @@
-name: Repro: build → artifact → download → Orca scan
-
+name: test artifact scan
 on:
   workflow_dispatch:
   push:

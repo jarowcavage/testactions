@@ -62,12 +62,12 @@ jobs:
           docker load -i ./in/image.tar
           echo "Images after load:"
           docker images
-      - name: Run Orca Container Image Scan
+      - name: Run Orca Container Image Scan on Scanner Image
         uses: orcasecurity/shiftleft-container-image-action@v1
         with:
           api_token: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
           project_key: ${{ env.PROJECT_KEY }}
-          image: $ORCA_IMAGE
+          image: ${{ env.ORCA_IMAGE }}
           output:
             "results/"
       - name: Show Orca Scan Results in Logs
@@ -77,6 +77,21 @@ jobs:
 
           echo "===== Orca image file ====="
           cat results/image || echo "results/image not found"
+      
+      - name: Run Orca Container Image Scan on Artifact Loaded Image
+        uses: orcasecurity/shiftleft-container-image-action@v1
+        with:
+          api_token: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
+          project_key: ${{ env.PROJECT_KEY }}
+          image: "original:image"
+          output:
+            "results/"
+      - name: Show Orca Scan Results in Logs
+        run: |
+          echo "===== Orca image.json ====="
+          cat results/image.json || echo "image.json not found"
 
+          echo "===== Orca image file ====="
+          cat results/image || echo "results/image not found"
 
 

@@ -1,0 +1,77 @@
+name: Repro: build → artifact → download → Orca scan
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-upload:
+    name: Build image and upload as artifact
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      # Optional: use BuildKit/Buildx for consistency and speed
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          # Customize tag as needed
+          IMAGE_TAG="sample-app:ci"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+          docker build -t "${IMAGE_TAG}" .
+
+      - name: Save image to tarball
+        run: |
+          mkdir -p out
+          docker save "${IMAGE_TAG}" -o out/image.tar
+          # record the tag so the next job knows what to load/scan
+          echo "${IMAGE_TAG}" > out/image-tag.txt
+
+      - name: Upload artifact (image tar)
+        uses: actions/upload-artifact@v5
+        with:
+          name: built-image
+          path: |
+            out/image.tar
+            out/image-tag.txt
+          retention-days: 1
+
+  download-and-scan:
+    name: Download artifact, load image, run Orca scan
+    runs-on: ubuntu-latest
+    needs: build-and-upload
+    env:
+      # Set your Orca region if required, otherwise default is used
+      # ORCA_REGION: us
+      # Image tag will be read from the artifact file
+      IMAGE_TAG: ""
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v5
+        with:
+          name: built-image
+          path: ./in
+
+      - name: Load image into Docker
+        run: |
+          IMAGE_TAG="$(cat ./in/image-tag.txt)"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+          docker load -i ./in/image.tar
+          echo "Images after load:"
+          docker images
+
+      # Option A: Use Orca’s official GitHub Action to scan the local image
+      - name: Orca scan (GitHub Action)
+        uses: orcasecurity/shiftleft-container-image-action@v1
+        with:
+          image: ${{ env.IMAGE_TAG }}
+        env:
+          ORCA_API_TOKEN: ${{ secrets.ORCA_API_TOKEN }}
+          # ORCA_REGION: ${{ env.ORCA_REGION }}
+
+

@@ -25,7 +25,8 @@ jobs:
       - name: Save image to tarball
         run: |
           mkdir -p out
-          docker save "tarred:image" -o out/image.tar
+          docker save "original:image" -o out/image.tar
+          docker rmi "original:image" || true
 
       - name: Upload artifact (image tar)
         uses: actions/upload-artifact@v5
@@ -58,7 +59,7 @@ jobs:
         with:
           api_token: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
           project_key: ${{ env.PROJECT_KEY }}
-          image: "tarred:image"
+          image: "original:image"
           output:
             "results/"
       - name: Show Orca Scan Results in Logs

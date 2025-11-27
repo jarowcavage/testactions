@@ -48,7 +48,12 @@ jobs:
         with:
           name: built-image
           path: ./in
-
+          
+      - name: Check images before load
+        run: |
+          echo "Images before load:"
+          docker images
+          
       - name: Load image into Docker
         run: |
           docker load -i ./in/image.tar

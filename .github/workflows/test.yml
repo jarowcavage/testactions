@@ -42,6 +42,7 @@ jobs:
     needs: build-and-upload
     env:
       PROJECT_KEY: default
+      ORCA_IMAGE: ""
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v5
@@ -53,6 +54,8 @@ jobs:
         run: |
           echo "Images before load:"
           docker images
+          ORCA_IMAGE=$(docker images --format '{{.Repository}}:{{.Tag}}' | head -n 1)
+          echo $ORCA_IMAGE
           
       - name: Load image into Docker
         run: |
@@ -64,7 +67,7 @@ jobs:
         with:
           api_token: ${{ secrets.ORCA_SECURITY_API_TOKEN }}
           project_key: ${{ env.PROJECT_KEY }}
-          image: "original:image"
+          image: $ORCA_IMAGE
           output:
             "results/"
       - name: Show Orca Scan Results in Logs

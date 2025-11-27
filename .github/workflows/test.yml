@@ -55,7 +55,7 @@ jobs:
           echo "Images before load:"
           docker images
           ORCA_IMAGE=$(docker images --format '{{.Repository}}:{{.Tag}}' | head -n 1)
-          echo $ORCA_IMAGE
+          echo "ORCA_IMAGE=$ORCA_IMAGE" >> $GITHUB_ENV
           
       - name: Load image into Docker
         run: |
